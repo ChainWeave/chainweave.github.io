@@ -1,22 +1,80 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>卡通积分查询</title>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 600px;
+      /* 修改为适当的容器高度 */
+      gap: 50px;
+    }
+
+    .text-box {
+      width: 800px;
+      height: 200px;
+      /* 修改为适当的文本框高度 */
+    }
+
+    .button {
+      width: 100px;
+      height: 100px;
+      margin-top: 50px;
+      /* 修改为适当的间距大小 */
+      margin-bottom: -30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <button class="button" onclick="calculateSquare()">查询积分</button>
+    <textarea id="inputText" class="text-box" placeholder="请一行一个输入地址" rows="5"></textarea>
+    <textarea id="outputText" class="text-box" placeholder="点击 查询积分 按钮，积分会显示在这里" rows="5" readonly></textarea>
+  </div>
+
   <script>
     function calculateSquare() {
-      var input = document.getElementById("input").value;
-      var result = input * input*input;
-      document.getElementById("output").value = result;
+      // // 获取输入文本框的值
+      // var input = document.getElementById("inputText").value;
+
+      // // 将输入转换为数字，并计算平方
+      // var square = parseFloat(input) ** 2;
+
+      // // 将结果显示在输出文本框中
+      // document.getElementById("outputText").value = square;
+
+      var inputTextarea = document.getElementById("inputText");
+      var outputTextarea = document.getElementById("outputText");
+
+      var inputLines = inputTextarea.value.split("\n");
+      var results = [];
+
+      for (var i = 0; i < inputLines.length; i++) {
+        if (inputLines[i] != '') {
+          const url = `https://pandora.lifeform.cc/lifeform_bsc_prod/api/avatarCartoon/getAccountInfo?address=${inputLines[i]}`;
+
+          fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              results.push('1');
+              results.push(data.result.allPoint);
+            })
+            .catch(error => {
+              results.push('2');
+              results.push(error);
+            });
+
+        }
+
+      }
+
+      outputTextarea.value = results.join("\n");
     }
   </script>
-</head>
-<body>
-  <h1>积分查询</h1>
-  <label for="input">输入地址：</label>
-  <input type="number" id="input">
-  <button onclick="calculateSquare()">开始运行</button>
-  <br>
-  <label for="output">积分：</label>
-  <input type="text" id="output" readonly>
 </body>
+
 </html>
