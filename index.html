@@ -9,21 +9,18 @@
       align-items: center;
       justify-content: center;
       height: 600px;
-      /* 修改为适当的容器高度 */
       gap: 50px;
     }
 
     .text-box {
       width: 800px;
       height: 200px;
-      /* 修改为适当的文本框高度 */
     }
 
     .button {
-      width: 100px;
-      height: 100px;
-      margin-top: 50px;
-      /* 修改为适当的间距大小 */
+      width: 200px;
+      height: 50px;
+      margin-top: 10px;
       margin-bottom: -30px;
     }
   </style>
@@ -31,48 +28,42 @@
 
 <body>
   <div class="container">
-    <button class="button" onclick="calculateSquare()">查询积分</button>
-    <textarea id="inputText" class="text-box" placeholder="请一行一个输入地址" rows="5"></textarea>
-    <textarea id="outputText" class="text-box" placeholder="点击 查询积分 按钮，积分会显示在这里" rows="5" readonly></textarea>
+    <button id="queryButton" class="button" onclick="getPoints()">查询积分</button>
+    <span >https://twitter.com/chainweave</span>
+    <textarea id="inputText" spellcheck="false" class="text-box" placeholder="请一行一个输入地址，某行为空或地址错误，运行时会自动忽略"
+      rows="5"></textarea>
+    <textarea id="outputText" class="text-box" placeholder="点击查询积分按钮，积分会显示在这里" rows="5" readonly></textarea>
   </div>
 
   <script>
-    function calculateSquare() {
-      // // 获取输入文本框的值
-      // var input = document.getElementById("inputText").value;
-
-      // // 将输入转换为数字，并计算平方
-      // var square = parseFloat(input) ** 2;
-
-      // // 将结果显示在输出文本框中
-      // document.getElementById("outputText").value = square;
+    function getPoints() {
+      var queryButton = document.getElementById("queryButton");
+      queryButton.disabled = true;
+      queryButton.innerText = "请稍等，查询中...";
 
       var inputTextarea = document.getElementById("inputText");
       var outputTextarea = document.getElementById("outputText");
+      var addresses = inputTextarea.value.split("\n");
+      outputTextarea.value = "";
 
-      var inputLines = inputTextarea.value.split("\n");
-      var results = [];
+      var promises = addresses.map(function (address) {
+        var url = `https://pandora.lifeform.cc/lifeform_bsc_prod/api/avatarCartoon/getAccountInfo?address=${address}`;
 
-      for (var i = 0; i < inputLines.length; i++) {
-        if (inputLines[i] != '') {
-          const url = `https://pandora.lifeform.cc/lifeform_bsc_prod/api/avatarCartoon/getAccountInfo?address=${inputLines[i]}`;
+        return fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            outputTextarea.value += `${address} > Point: ${data.result.allPoint}\n`;
+          })
+          .catch(error => {
+            console.log('Error:', error);
+          });
+      });
 
-          fetch(url)
-            .then(response => response.json())
-            .then(data => {
-              results.push('1');
-              results.push(data.result.allPoint);
-            })
-            .catch(error => {
-              results.push('2');
-              results.push(error);
-            });
-
-        }
-
-      }
-
-      outputTextarea.value = results.join("\n");
+      Promise.all(promises)
+        .then(function () {
+          queryButton.disabled = false;
+          queryButton.innerText = "查询积分"; // 恢复按钮文本
+        });
     }
   </script>
 </body>
