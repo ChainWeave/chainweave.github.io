@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>平方计算器</title>
+  <script>
+    function calculateSquare() {
+      var input = document.getElementById("input").value;
+      var result = input * input;
+      document.getElementById("output").value = result;
+    }
+  </script>
+</head>
+<body>
+  <h1>平方计算器</h1>
+  <label for="input">输入数字：</label>
+  <input type="number" id="input">
+  <button onclick="calculateSquare()">开始运行</button>
+  <br>
+  <label for="output">输出结果：</label>
+  <input type="text" id="output" readonly>
+</body>
+</html>
